@@ -110,7 +110,7 @@ def test_batched_cpu_runtime_matches_individual_controllers(
 ) -> None:
     spec = _spec(controller_type)
     rng = np.random.default_rng(71)
-    genomes = [rng.normal(0.0, 0.3, spec.parameter_count) for _ in range(4)]
+    genomes = np.stack([rng.normal(0.0, 0.3, spec.parameter_count) for _ in range(4)])
     individual = [build_controller(genome, spec) for genome in genomes]
     runtime = PopulationControllerRuntime(genomes, spec, "cpu")
     active = np.asarray([True, True, False, True])

@@ -190,7 +190,7 @@ def test_live_simulation_speed_changes_pacing_only() -> None:
 def test_batch_population_uses_distinct_genomes_and_identical_episode_seeds() -> None:
     _FakeBatchEnvironment.reset_seeds.clear()
     spec = ControllerSpec("reactive", input_size=2, hidden_size=1)
-    genomes = [_action_genome(spec, action) for action in (0, 1, 2)]
+    genomes = np.stack([_action_genome(spec, action) for action in (0, 1, 2)])
     config = EpisodeConfig(seeds=(7, 8), max_steps=2)
     session = PopulationEvaluationSession(
         spec,

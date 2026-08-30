@@ -205,7 +205,7 @@ def evaluate_population_batch(
 ) -> list[CandidateEvaluation]:
     """Evaluate one complete 1--100 Dino generation in one shared world."""
 
-    if not genomes:
+    if len(genomes) == 0:
         raise ValueError("Population cannot be empty")
     if session is not None and not 1 <= session.population_size <= 100:
         raise ValueError("A supplied session must be a 1-100 Dino visual arena")

@@ -264,7 +264,7 @@ class PopulationControllerRuntime:
         spec: ControllerSpec,
         accelerator: Accelerator = "auto",
     ) -> None:
-        if not genomes:
+        if len(genomes) == 0:
             raise ValueError("Population controller runtime requires genomes")
         self.spec = spec
         self.population_size = len(genomes)
