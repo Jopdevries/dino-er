@@ -197,12 +197,6 @@ five disjoint worlds; the final test uses another 20 disjoint worlds. The exact
 seed lists and experiment matrix are versioned in
 [`configs/experiment-plan.json`](configs/experiment-plan.json).
 
-> [!IMPORTANT]
-> In the implemented RQ2 pipeline, the configured Gaussian scale controls both
-> initial genome spread and mutation magnitude. RQ2 therefore measures
-> sensitivity to that combined scale setting; it is not a mutation-only
-> intervention.
-
 ## Repository structure
 
 ```text
