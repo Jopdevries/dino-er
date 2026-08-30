@@ -1,0 +1,42 @@
+Chromium Dino source provenance
+===============================
+
+Repository: https://github.com/chromium/chromium
+Commit: 1ccb91e11f09fbbdec4f8f754d0e2f7d28246660
+Directory: components/neterror/resources/dino_game
+Retrieved and audited: 2026-07-23
+
+The runtime is a local TypeScript port. These hashes identify the exact
+official source files used for the gameplay audit:
+
+offline.ts
+  SHA-256 3d6e251e07c7ff8a5d981c2cc736a2a2fa3dd3c4bf1b7e58546f83255e4af2ad
+horizon.ts
+  SHA-256 a5dcd3e56145c6fd39bd2c2626ae433c7be768d941b5c44e1b8dd00edfa99d22
+obstacle.ts
+  SHA-256 18215a0292cbb56a293775440687ffb83a3bbb7ce4da69b41a0d20c05ac9e350
+trex.ts
+  SHA-256 bc40b980ebc151ac0c6c88a0aae45a9e459af4e212c6cb15d91a1e87cd86417d
+offline_sprite_definitions.ts
+  SHA-256 d17f339d17bfbdffb1130529bbbe48ab1024ec6344a5d21f41a93351502a3f48
+cloud.ts
+  SHA-256 80db07c33522c86a8d8cbe7bb132cb1633d182aa74e54fb443da952818edb443
+horizon_line.ts
+  SHA-256 6c58d26133698c988b6bc1037c9e6830152fa3f817e91d1f51dbfb066c046366
+night_mode.ts
+  SHA-256 e1a00e8b3be455b7e24b91a72349042619f1bb100324db137bf39955e4e65626
+distance_meter.ts
+  SHA-256 f23707226c7300a439c29bb16de98510c3a981bd3fc144b14a79ef90c3751bc8
+game_over_panel.ts
+  SHA-256 2aa61dd76588b2a0b0c8c393aa68247736c542006bc29869eb1c0f5f12a19747
+utils.ts
+  SHA-256 281b92309b765537564c135e29519d04cfef750c2b40c4517ec294bb808b9bd3
+
+Runtime sprite assets copied from the same commit:
+
+game/public/assets/chromium/100-offline-sprite.png
+  SHA-256 04d05978fdb111358073ab0524e5c1fafc0826615c206987618416b8bd8a4747
+game/public/assets/chromium/200-offline-sprite.png
+  SHA-256 e4222715b556e7d99622c83e620d2f8e090047e56adb07923047f95828d561f2
+
+The applicable Chromium licence is reproduced in THIRD_PARTY_NOTICES.txt.

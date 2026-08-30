@@ -1,0 +1,312 @@
+:root {
+  color: #202124;
+  background: #f5f6f4;
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-synthesis: none;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 720px;
+}
+
+#app {
+  width: min(1040px, calc(100% - 32px));
+  margin: 24px auto 48px;
+}
+
+header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 14px;
+}
+
+h1,
+h2,
+p {
+  margin: 0;
+}
+
+h1 {
+  font-size: 1.35rem;
+  font-weight: 650;
+}
+
+h2 {
+  font-size: 1rem;
+}
+
+#run-status {
+  color: #5f6368;
+  font-size: 0.9rem;
+  text-align: right;
+}
+
+#population-game {
+  display: block;
+  width: 600px;
+  max-width: 100%;
+  height: auto;
+  background: #fff;
+  image-rendering: pixelated;
+}
+
+#score-definition {
+  margin-top: 4px;
+  color: #5f6368;
+  font-size: 0.76rem;
+}
+
+.controls,
+.selection-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.controls {
+  align-items: center;
+  margin: 12px 0;
+}
+
+.speed-control {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 34px;
+  padding: 0 8px;
+  border: 1px solid #d8dad7;
+  border-radius: 4px;
+  background: #fff;
+}
+
+.speed-control input {
+  width: 120px;
+  min-height: auto;
+}
+
+.speed-control output {
+  min-width: 3.5rem;
+  color: #202124;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+button,
+input,
+select {
+  min-height: 34px;
+  border: 1px solid #b9bdb9;
+  border-radius: 4px;
+  background: #fff;
+  color: inherit;
+  font: inherit;
+}
+
+button {
+  padding: 6px 12px;
+  cursor: pointer;
+}
+
+button:hover:not(:disabled) {
+  border-color: #4b7569;
+  background: #f1f6f4;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.summary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1px;
+  overflow: hidden;
+  border: 1px solid #d8dad7;
+  border-radius: 5px;
+  background: #d8dad7;
+}
+
+.summary div {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+  padding: 10px 12px;
+  background: #fff;
+}
+
+.summary span,
+dt,
+label {
+  color: #666b68;
+  font-size: 0.76rem;
+}
+
+label small {
+  display: block;
+  margin-top: 4px;
+  color: #777c79;
+  font-size: 0.68rem;
+}
+
+.summary strong {
+  overflow: hidden;
+  font-size: 0.9rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.panel {
+  margin-top: 12px;
+  padding: 16px;
+  border: 1px solid #d8dad7;
+  border-radius: 5px;
+  background: #fff;
+}
+
+.panel-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.panel-heading p,
+.path-output,
+#scientific-files p {
+  margin-top: 4px;
+  color: #666b68;
+  font-size: 0.82rem;
+}
+
+#evidence-label {
+  padding: 3px 7px;
+  border-radius: 3px;
+  background: #eceeeb;
+  color: #5f6368;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.scientific-figures {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 14px;
+  margin-top: 14px;
+}
+
+.scientific-figures figure {
+  margin: 0;
+  padding: 10px;
+  border: 1px solid #eceeeb;
+}
+
+.scientific-figures img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.scientific-figures figcaption {
+  margin: 8px 0 5px;
+  font-size: 0.8rem;
+  font-weight: 650;
+}
+
+.scientific-figures a {
+  color: #1f5f50;
+  font-size: 0.8rem;
+}
+
+#generation-history {
+  display: block;
+  width: 100%;
+  height: 170px;
+  border: 1px solid #eceeeb;
+}
+
+.selected-grid {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 24px;
+}
+
+dl {
+  margin: 0;
+}
+
+dl div {
+  display: grid;
+  grid-template-columns: minmax(110px, 1fr) 1fr;
+  gap: 12px;
+  padding: 5px 0;
+  border-bottom: 1px solid #eef0ed;
+}
+
+dd {
+  margin: 0;
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-size: 0.8rem;
+  text-align: right;
+}
+
+summary {
+  cursor: pointer;
+  font-weight: 650;
+}
+
+#run-settings {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+}
+
+#run-settings label {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+#run-settings .wide {
+  grid-column: span 2;
+}
+
+input,
+select {
+  width: 100%;
+  padding: 5px 8px;
+}
+
+code {
+  overflow-wrap: anywhere;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+@media (max-width: 820px) {
+  body {
+    min-width: 0;
+  }
+
+  .summary,
+  #run-settings {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .selected-grid {
+    grid-template-columns: 1fr;
+  }
+}

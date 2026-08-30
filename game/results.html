@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en" data-theme="corporate">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="data:," />
+    <title>Dino ER Scientific Results</title>
+  </head>
+  <body class="min-w-80">
+    <main class="mx-auto my-6 w-[min(1440px,calc(100%-2rem))] space-y-5">
+      <header class="flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
+        <div>
+          <h1 class="text-2xl font-semibold">Dino ER scientific evidence</h1>
+          <p class="max-w-3xl text-sm opacity-70">Research-question-led figures reconstructed only from immutable Parquet parts. Partial evidence is shown for monitoring and labelled as preliminary.</p>
+        </div>
+        <button id="refresh-results" type="button" class="btn">Refresh results</button>
+      </header>
+
+      <div id="result-status" class="alert" role="status">Loading Parquet results…</div>
+
+      <div role="tablist" class="tabs tabs-box overflow-x-auto" aria-label="Scientific result sections">
+        <button id="tab-rq1" type="button" role="tab" class="tab tab-active" aria-selected="true">RQ1: Learning</button>
+        <button id="tab-rq2" type="button" role="tab" class="tab" aria-selected="false">RQ2: Sensitivity</button>
+        <button id="tab-rq3" type="button" role="tab" class="tab" aria-selected="false">RQ3: Behaviour</button>
+        <button id="tab-final" type="button" role="tab" class="tab" aria-selected="false">Final Test</button>
+      </div>
+
+      <section id="panel-rq1" data-result-panel="rq1" aria-labelledby="tab-rq1"></section>
+      <section id="panel-rq2" data-result-panel="rq2" aria-labelledby="tab-rq2" hidden></section>
+      <section id="panel-rq3" data-result-panel="rq3" aria-labelledby="tab-rq3" hidden></section>
+      <section id="panel-final" data-result-panel="final" aria-labelledby="tab-final" hidden></section>
+    </main>
+    <script type="module" src="/src/results.ts"></script>
+  </body>
+</html>

@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Evolutionary Chrome Dino</title>
+  </head>
+  <body>
+    <main id="app">
+      <header>
+        <h1>Evolutionary Chrome Dino</h1>
+        <p id="run-status" role="status">Connecting to Python...</p>
+      </header>
+
+      <canvas
+        id="population-game"
+        width="600"
+        height="150"
+        aria-label="Shared Chrome Dino game with Chromium distance score"
+        aria-describedby="score-definition"
+      ></canvas>
+      <p id="score-definition">
+        Canvas counter: Chromium distance score. ER fitness below: survival in 60-Hz control steps.
+      </p>
+
+      <nav class="controls" aria-label="Evolution controls">
+        <button type="button" id="resume">Resume</button>
+        <button type="button" id="pause">Pause</button>
+        <button type="button" id="stop">Stop after generation</button>
+        <button type="button" id="save-best">Save best</button>
+        <label class="speed-control" for="simulation-speed">
+          Simulation speed
+          <input id="simulation-speed" type="range" min="0.25" max="100" step="0.25" value="1" />
+          <output id="simulation-speed-value" for="simulation-speed">1.00x</output>
+          <button type="button" id="reset-simulation-speed">1x</button>
+        </label>
+      </nav>
+
+      <section class="summary" aria-label="Run summary">
+        <div><span>Controller</span><strong id="controller">unknown</strong></div>
+        <div><span>Generation</span><strong id="generation">0</strong></div>
+        <div><span>Alive</span><strong id="alive">0 / 0</strong></div>
+        <div><span>Live mean survival [steps]</span><strong id="fitness-mean">0</strong></div>
+        <div><span>Best survival [steps]</span><strong id="fitness-best">0</strong></div>
+        <div><span>Mutation scale</span><strong id="mutation-scale">n/a</strong></div>
+        <div><span>Compute</span><strong id="accelerator">unknown</strong></div>
+        <div><span>Seed</span><strong id="seed">0</strong></div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-heading">
+          <div>
+            <h2>Live generation monitor</h2>
+            <p>Best and selected-parent mean by completed generation; live tiles show all current candidates.</p>
+          </div>
+          <span id="evidence-label">ENGINEERING RUN</span>
+        </div>
+        <canvas id="generation-history" width="720" height="170" aria-label="Generation best and selected-parent mean fitness"></canvas>
+      </section>
+
+      <section class="panel selected-panel">
+        <div class="panel-heading">
+          <div>
+            <h2>Selected Dino</h2>
+            <p>Only the five displayed current-frame values enter its controller.</p>
+          </div>
+          <div class="selection-controls">
+            <button type="button" id="previous-dino" aria-label="Select previous Dino">Previous</button>
+            <button type="button" id="best-dino">Best</button>
+            <button type="button" id="next-dino" aria-label="Select next Dino">Next</button>
+            <button type="button" id="save-selected">Save selected</button>
+          </div>
+        </div>
+        <div class="selected-grid">
+          <dl>
+            <div><dt>Dino</dt><dd id="selected-id">0</dd></div>
+            <div><dt>Status</dt><dd id="selected-status">waiting</dd></div>
+            <div><dt>Action</dt><dd id="selected-action">none</dd></div>
+            <div><dt>Survival fitness [steps]</dt><dd id="selected-fitness">0</dd></div>
+            <div><dt>Scores</dt><dd id="selected-scores">0 / 0 / 0</dd></div>
+            <div><dt>Genome</dt><dd id="selected-genome">waiting</dd></div>
+            <div><dt>Visual obstacle</dt><dd id="selected-obstacle">none detected</dd></div>
+          </dl>
+          <dl id="sensors" aria-label="Pixel-derived controller inputs"></dl>
+        </div>
+        <p id="saved-model" class="path-output"></p>
+      </section>
+
+      <details class="panel settings-panel">
+        <summary>Start a new run</summary>
+        <form id="run-settings">
+          <label>Controller
+            <select id="new-controller">
+              <option value="reactive">Reactive</option>
+              <option value="proactive">Proactive CTRNN</option>
+            </select>
+          </label>
+          <label>Parents (mu)
+            <input id="new-parents" type="number" min="1" max="99" value="20" />
+          </label>
+          <label>Offspring (lambda)
+            <input id="new-offspring" type="number" min="1" max="99" value="80" />
+          </label>
+          <label>Compute
+            <select id="new-accelerator">
+              <option value="auto">Auto</option>
+              <option value="cuda">CUDA</option>
+              <option value="cpu">CPU</option>
+            </select>
+          </label>
+          <label>Mode
+            <select id="new-mode">
+              <option value="continuous">Continuous</option>
+              <option value="scientific">Scientific</option>
+            </select>
+          </label>
+          <label>Generations
+            <input id="new-generations" type="number" min="1" max="10000" value="30" />
+          </label>
+          <label>Steps per seed
+            <input id="new-max-steps" type="number" min="30" max="1000000" value="3600" />
+            <small>Use 3600 for one 60-second horizon with late pterodactyl exposure.</small>
+          </label>
+          <label>Mutation scale
+            <input id="new-mutation-scale" type="number" min="0.0001" max="5" step="any" value="0.3" />
+          </label>
+          <label>Evolution seed
+            <input id="new-evolution-seed" type="number" value="7" />
+          </label>
+          <label class="wide">Training seeds
+            <input id="new-training-seeds" type="text" value="101,202,707,808,909,1001,1102,1203,1304,1405" />
+          </label>
+          <label class="wide scientific-setting">Validation seeds
+            <input id="new-validation-seeds" type="text" value="303,404,1303,1404,2303" />
+          </label>
+          <label class="wide scientific-setting">Locked test seeds
+            <input id="new-test-seeds" type="text" value="505,606,1505,1606,2505,2606,3505,3606,4505,4606,5505,5606,6505,6606,7505,7606,8505,8606,9505,9606" />
+          </label>
+          <label class="wide scientific-setting">Study ID
+            <input id="new-study-id" type="text" value="dino-er-main" />
+          </label>
+          <button type="submit">Start new run</button>
+        </form>
+      </details>
+
+      <section id="scientific-files" class="panel" hidden>
+        <h2>Scientific results</h2>
+        <p>Figures are generated from the immutable Parquet result parts, never from transient GUI values.</p>
+        <p><span>Parquet run:</span> <code id="result-directory"></code></p>
+        <p><span>Run:</span> <code id="run-output"></code></p>
+        <p><span>Study:</span> <code id="study-output"></code></p>
+        <div id="scientific-figures" class="scientific-figures"></div>
+      </section>
+
+      <div id="private-observations" hidden aria-hidden="true"></div>
+    </main>
+    <script type="module" src="/src/batch.ts"></script>
+  </body>
+</html>

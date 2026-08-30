@@ -1,0 +1,81 @@
+# Local tooling and course material
+AGENTS.md
+.agents/
+.benchmarks/
+.code-review-graph/
+.local_project/
+.mcp.json
+.playwright-cli/
+.vscode/
+.idea/
+lectures/
+docs/
+*.code-workspace
+
+# Python and build output
+.venv/
+.venv-*/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage*
+coverage.xml
+htmlcov/
+build/
+dist/
+*.egg-info/
+
+# Node and test output
+node_modules/
+playwright-report/
+test-results/
+
+# Scientific/runtime output
+artifacts/
+checkpoints/
+output/
+results/
+runs/
+scientific-results.html
+scientific-results-assets/
+tmp/
+videos/
+.tensorboard/
+*.jsonl
+*.log
+*.npz
+*.parquet
+*.pkl
+*.prof
+*.pstats
+
+# Local configuration and secrets
+.env
+.env.*
+!.env.example
+credentials/
+secrets/
+*.local
+*.local.*
+
+# LaTeX output
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.lof
+*.lot
+*.out
+*.synctex.gz
+*.toc
+
+# Editor and operating-system files
+.DS_Store
+Thumbs.db
+Desktop.ini
+*.swp
+*.swo
+*~

@@ -1,0 +1,39 @@
+{
+  "model_version": 2,
+  "results_root": "results",
+  "output_root": "artifacts/experiments",
+  "common": {
+    "campaign_timestamp": "2026-08-29_17-16-07_CEST",
+    "training_seeds": [101, 202, 707, 808, 909, 1001, 1102, 1203, 1304, 1405],
+    "validation_seeds": [303, 404, 1303, 1404, 2303],
+    "final_test_seeds": [505, 606, 1505, 1606, 2505, 2606, 3505, 3606, 4505, 4606, 5505, 5606, 6505, 6606, 7505, 7606, 8505, 8606, 9505, 9606]
+  },
+  "experiments": [
+    {
+      "id": "rq1-main",
+      "adaptive_sigma": true,
+      "controllers": ["reactive", "proactive"],
+      "optimizer_seeds": [7, 17, 27],
+      "parent_counts": [20],
+      "offspring_counts": [80],
+      "mutation_scales": [0.3],
+      "generations": 25,
+      "max_steps": 3600
+    },
+    {
+      "id": "rq2-sensitivity",
+      "adaptive_sigma": false,
+      "controllers": ["reactive", "proactive"],
+      "optimizer_seeds": [7, 17, 27],
+      "cells": [
+        {"parent_count": 20, "mutation_scale": 0.1},
+        {"parent_count": 20, "mutation_scale": 0.3},
+        {"parent_count": 20, "mutation_scale": 0.6},
+        {"parent_count": 10, "mutation_scale": 0.3},
+        {"parent_count": 40, "mutation_scale": 0.3}
+      ],
+      "generations": 25,
+      "max_steps": 3600
+    }
+  ]
+}

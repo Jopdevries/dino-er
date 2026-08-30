@@ -1,0 +1,24 @@
+{
+  "name": "dino-er-game",
+  "version": "0.3.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview --host 127.0.0.1",
+    "test:ts": "vitest run",
+    "test:visual": "playwright test",
+    "test:visual:update": "playwright test --update-snapshots"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.1.18",
+    "@playwright/test": "1.61.1",
+    "@types/node": "26.1.1",
+    "daisyui": "^5.5.18",
+    "tailwindcss": "^4.1.18",
+    "typescript": "7.0.2",
+    "vite": "8.1.5",
+    "vitest": "4.1.10"
+  }
+}
