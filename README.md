@@ -11,6 +11,8 @@ TU Delft · Research software · Python 3.11 · TypeScript · Chromium/Playwrigh
 [Research](#research-questions) · [Results](#results-at-a-glance) ·
 [Reproduction](#reproducing-the-study) · [Citation](#citation)
 
+**Full paper:** [read the scientific report (PDF)](paper/JH_de_Vries_AE4350_report.pdf)
+
 ## Overview
 
 This repository contains the complete software pipeline for evolving, evaluating,
@@ -210,6 +212,7 @@ Project-Code/
 │   ├── src/                       engine, renderer, input, and batch bridge
 │   └── tests/                     engine and visual-regression tests
 ├── media/                         curated image used by this README
+├── paper/                         complete scientific report in PDF format
 ├── scripts/                       experiment, replay, system-check, and viewer CLIs
 ├── src/dino_er/                   Python research implementation
 │   ├── controllers.py             FFNN and CTRNN definitions
@@ -333,8 +336,9 @@ Original project code is released under the [MIT License](LICENSE).
 
 ## Citation
 
-If you use this software or experimental design, cite the accompanying report and
-the repository version used for the analysis. Until an archival DOI is available,
+If you use this software or experimental design, cite the
+[accompanying report](paper/JH_de_Vries_AE4350_report.pdf) and the repository
+version used for the analysis. Until an archival DOI is available,
 the following software citation can be used:
 
 ```bibtex

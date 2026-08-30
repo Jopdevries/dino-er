@@ -51,6 +51,16 @@ videos/
 *.prof
 *.pstats
 
+# Published evidence: only the two validation-frozen representative runs.
+!results/
+results/*
+!results/model_v002_46ccc63ff585/
+results/model_v002_46ccc63ff585/*
+!results/model_v002_46ccc63ff585/85137ffa5b1d/
+!results/model_v002_46ccc63ff585/85137ffa5b1d/**
+!results/model_v002_46ccc63ff585/f2b650a8f6f0/
+!results/model_v002_46ccc63ff585/f2b650a8f6f0/**
+
 # Local configuration and secrets
 .env
 .env.*
