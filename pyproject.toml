@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "dino-er"
 version = "0.3.0"
-description = "Evolution of reactive and proactive visual Chrome Dino controllers"
+description = "AE4350 study of learning and internal-state use in reactive and recurrent Chromium Dino controllers"
 readme = "README.md"
 requires-python = ">=3.11,<3.12"
 license = { file = "LICENSE" }

@@ -1,49 +1,104 @@
-# Evolved Visual Control for Chromium Dino
+# Internal state in evolved visual control
 
-> A parameter-matched comparison of reactive and recurrent neural controllers,
-> evolved from rendered pixels in a deterministic Chromium Dino environment.
+This repository accompanies the AE4350 report *Internal state in evolved visual
+control: Reactive and proactive controllers for Chromium Dino*. The study
+compares a reactive feed-forward neural network (FFNN) with a continuous-time
+recurrent neural network (CTRNN). Both controllers have 93 evolved parameters,
+receive the same five measurements extracted from the current rendered frame,
+and are evaluated on the same seeded worlds and candidate budget.
 
-**AE4350 Bio-inspired Intelligence and Learning for Aerospace Applications**
+The main result is deliberately narrower than "recurrence is better". The
+reactive controller learned faster within the fixed budget. The selected CTRNN
+did use its recurrent state, but that mechanism did not produce a consistent
+validation advantage and the selected reactive policy performed better on the
+locked test worlds.
 
-TU Delft · Research software · Python 3.11 · TypeScript · Chromium/Playwright
+The complete ten-page report is available at
+[paper/JH_de_Vries_AE4350_report.pdf](paper/JH_de_Vries_AE4350_report.pdf).
 
-[Install](#installation) · [Commands](#command-reference) ·
-[Research](#research-questions) · [Results](#results-at-a-glance) ·
-[Reproduction](#reproducing-the-study) · [Citation](#citation)
+## Results
 
-**Full paper:** [read the scientific report (PDF)](paper/JH_de_Vries_AE4350_report.pdf)
+![Selected-parent training survival for the three reactive and three proactive RQ1 runs](media/rq1_learning.png)
 
-## Overview
+The figure shows selected-parent training survival over 2,500 candidate
+evaluations. Thin lines are independent optimiser runs and thick lines are
+architecture means. Survival is capped at 3,600 control steps.
 
-This repository contains the complete software pipeline for evolving, evaluating,
-and inspecting visual controllers in a local Chromium Dino task. It compares a
-reactive feed-forward neural network (FFNN) with a proactive continuous-time
-recurrent neural network (CTRNN).
+The reported results are:
 
-Both controllers:
+- All three reactive runs reached the 3,600-step training ceiling; none of the
+  three proactive runs did so within the available budget.
+- Mean validation survival was 2,873 steps for the reactive architecture and
+  2,616 for the proactive architecture. The matched proactive-minus-reactive
+  effect was -257 ± 1,094 steps (two-sided 95% Student-t interval, three
+  optimiser runs), so validation did not establish a consistent
+  architecture-level advantage.
+- The mean architecture ordering changed across the tested
+  initialization-and-mutation scales and parent-offspring configurations. All
+  paired RQ2 intervals included zero.
+- Holding the first five-feature observation constant reduced both frozen
+  policies to about 271 steps, showing that both depended on updated visual
+  input.
+- Resetting the selected CTRNN's state before every control step reduced its
+  mean survival from 2,683 to 271 steps over the same five validation worlds.
+  This demonstrates functional state use by that policy.
+- On 20 locked test worlds, the selected reactive policy averaged 3,379 steps
+  and the selected proactive policy 1,625 steps. Reactive survival was higher
+  on 19 worlds; ceiling counts were 17/20 and 0/20 respectively.
 
-- observe the same five measurements extracted from the current rendered frame;
-- choose from the same three held-key actions;
-- contain exactly 93 evolved parameters;
-- use the same seeded worlds, fitness definition, and candidate budget.
+These conclusions concern finite-budget learning and the two frozen
+representatives in this task. Three optimiser runs per RQ1/RQ2 condition give
+descriptive uncertainty, not strong significance evidence. The locked-test and
+intervention intervals describe variation across worlds for fixed policies,
+not variation across independently evolved controllers.
 
-The TypeScript application implements the browser game, renderer, and batch
-bridge. The Python package implements perception, neural controllers, evolution,
-evaluation, causal interventions, persisted Parquet evidence, and scientific
-visualisation.
+## Experiment
+
+The research question is:
+
+> How do reactive and proactive evolved controllers differ in learning,
+> generalisation, and sensorimotor behaviour in the Chromium Dino task?
+
+The controller never reads game-engine state. A fixed perception front-end
+extracts five normalized quantities from each clean 600 × 150 rendered frame:
+obstacle-relative x and y, obstacle width and height, and the Dino's vertical
+position. The available actions are no key, jump held, and duck/fast-drop held.
+One controller decision advances one fixed 60 Hz game step.
+
+| | Reactive | Proactive |
+| --- | --- | --- |
+| Controller | FFNN, `5 → 10 → 3` | CTRNN, `5 → 6 recurrent → 3` |
+| Persistent controller state | None | Six recurrent states |
+| Evolved parameters | 93 | 93 |
+| Action selection | Raw-score `argmax` | Raw-score `argmax` |
+
+Fitness is mean survival over ten training worlds, with a 3,600-step ceiling
+and no reward shaping. The project uses an elitist `(μ + λ)` Evolution Strategy.
+The experiments are separated as follows:
+
+- **RQ1:** adaptive `(20 + 80)` evolution for 25 generations with optimiser
+  seeds 7, 17 and 27.
+- **RQ2:** five one-factor-at-a-time conditions. The configured scales are
+  `σ = 0.1, 0.3, 0.6` at `20 + 80`; the population configurations are
+  `10 + 90`, `20 + 80`, and `40 + 60` at fixed `σ = 0.3`. Every condition uses
+  three optimiser seeds per architecture.
+- **RQ3:** paired normal, constant-input, five single-channel ablation, and
+  recurrent-state-reset replays on five validation worlds.
+- **Locked test:** one validation-frozen representative per architecture on 20
+  previously unused worlds.
+
+In RQ2, the configured `σ` sets both the initial population spread and the
+offspring mutation magnitude. It should therefore be interpreted as an
+initialization-and-mutation scale, not as an isolated mutation-only effect.
+The exact condition matrix and disjoint seed partitions are in
+[configs/experiment-plan.json](configs/experiment-plan.json).
 
 ## Installation
 
-### Requirements
+The project requires Python 3.11, [uv](https://docs.astral.sh/uv/), Node.js/npm,
+and the Chromium build installed by Playwright.
 
-- Python `>=3.11,<3.12`;
-- [`uv`](https://docs.astral.sh/uv/);
-- a current Node.js/npm installation;
-- Chromium installed through Playwright.
-
-### 1. Install Python dependencies and Chromium
-
-Run these commands from the repository root:
+Install the Python environment and browser:
 
 ```console
 uv sync --extra dev
@@ -51,233 +106,86 @@ uv run --no-sync playwright install chromium
 uv run --no-sync python scripts/check_system.py --json
 ```
 
-The final command verifies the Python environment, Node/npm, browser runtime,
-game build prerequisites, and important project paths.
+The final command reports the Python, NumPy, CPU and optional controller
+accelerator configuration.
 
-### 2. Install and build the game
+On Windows, install the game dependencies and build the TypeScript application
+with:
 
-```powershell
-# Windows PowerShell
+```console
 npm.cmd --prefix game ci
 npm.cmd --prefix game run build
 ```
 
-```console
-# macOS or Linux
-npm --prefix game ci
-npm --prefix game run build
-```
+On macOS or Linux, use `npm` instead of `npm.cmd`.
 
-### 3. Run a small end-to-end experiment
+This finite run exercises the browser-perception-controller loop without
+starting a scientific campaign:
 
-This reduced population verifies the browser–perception–controller loop without
-starting the full scientific campaign:
+<!-- markdownlint-disable MD013 -->
 
 ```console
-uv run --no-sync python scripts/evolve.py --controller proactive --parents 2 --offspring 8 --continuous --render human
+uv run --no-sync python scripts/evolve.py --controller proactive --parents 2 --offspring 8 --training-seeds 101 --generations 1 --max-steps 600 --render human --simulation-speed 5 --exit-after-run
 ```
 
-The visible interface can pause execution, stop after a complete generation,
-save a candidate, and inspect progress. Run
-`uv run --no-sync python scripts/evolve.py --help` for finite budgets, seed sets,
-checkpoint options, output paths, and accelerator selection.
+<!-- markdownlint-enable MD013 -->
 
-Optional CUDA inference is available with:
+It is an engineering smoke test only. The reduced population, single seed and
+short horizon are not part of the reported evidence.
 
-```console
-uv sync --extra dev --extra cuda
-```
-
-CPU inference remains the portable default and does not alter the controller
-definition.
-
-## Command reference
-
-| Task | Command |
-|---|---|
-| Verify the local setup | `uv run --no-sync python scripts/check_system.py --json` |
-| Run a custom evolution | `uv run --no-sync python scripts/evolve.py --help` |
-| Inspect the campaign plan | `uv run --no-sync python scripts/run_experiments.py --dry-run` |
-| Run the complete campaign | `uv run --no-sync python scripts/run_experiments.py --accelerator auto --workers auto` |
-| Resume missing RQ3 evidence | `uv run --no-sync python scripts/run_experiments.py --rq3-only --model-hash 46ccc63ff585 --accelerator auto --workers 2` |
-| Generate the results viewer | `uv run --no-sync python scripts/view_results.py` |
-| Generate without opening a browser | `uv run --no-sync python scripts/view_results.py --no-open` |
-| Replay the latest proactive archive | `uv run --no-sync python scripts/replay.py --latest proactive` |
-| Run Python tests | `uv run --no-sync python -m pytest -q` |
-| Run linting | `uv run --no-sync python -m ruff check .` |
-| Run type checking | `uv run --no-sync python -m mypy src scripts tests` |
-| Build the game on Windows | `npm.cmd --prefix game run build` |
-| Run TypeScript tests on Windows | `npm.cmd --prefix game run test:ts` |
-| Run visual-regression tests on Windows | `npm.cmd --prefix game run test:visual` |
-
-On macOS or Linux, replace `npm.cmd` with `npm`.
-
-## Research questions
-
-The pre-declared study addresses three questions:
-
-1. **RQ1 — Learning and generalisation:** How do reactive and proactive
-   controllers differ in finite-budget learning and held-out survival?
-2. **RQ2 — Evolution-parameter sensitivity:** How sensitive is the observed
-   architecture contrast to the configured Gaussian scale and the
-   parent–offspring split?
-3. **RQ3 — Strategy and internal state:** How do the evolved strategies differ,
-   and does the proactive controller functionally depend on recurrent state?
-
-## Results at a glance
-
-The figure below shows selected-parent training survival over the equal
-2,500-candidate evaluation budget. Thin lines are the three independent optimizer
-runs; thick lines are architecture means. Survival is capped at 3,600 control
-steps.
-
-![RQ1 selected-parent learning curves](media/rq1_learning.png)
-
-*RQ1 learning curves from the saved model-v2 campaign. The dotted line is the
-270-step no-action reference used by the analysis.*
-
-| Evidence stage | Reactive FFNN | Proactive CTRNN | Uncertainty unit |
-|---|---:|---:|---|
-| RQ1 final archive training survival | 3,600.0 ± 0.0 | 2,589.7 ± 289.7 | 95% Student-t half-width across 3 optimizer runs |
-| RQ1 validation survival | 2,873.1 ± 495.6 | 2,615.9 ± 748.4 | 95% Student-t half-width across 3 optimizer runs |
-| Locked final-test survival | 3,379.4 ± 285.7 | 1,625.4 ± 411.9 | 95% Student-t half-width across 20 worlds for one frozen representative |
-| Locked final-test ceiling episodes | 17 / 20 | 0 / 20 | Descriptive count |
-
-The paired RQ1 validation contrast was **proactive − reactive = −257.1 ±
-1,094.2 control steps** across the three matched optimizer seeds. The interval
-includes zero, so the study does not establish a consistent architecture-level
-validation advantage. The locked final test compares one validation-frozen
-representative per architecture; its 20 worlds quantify environment-seed
-variation, not independent evolutionary replication.
-
-RQ3 provides evidence that the selected CTRNN *uses* recurrent state: resetting
-its state before every controller update reduced mean survival from 2,683.0 to
-270.6 steps over five matched worlds. This establishes functional dependence for
-that selected policy, but does not by itself establish a general performance
-benefit of recurrent capacity.
-
-## Experimental design
-
-### Controllers and observations
-
-| Property | Reactive | Proactive |
-|---|---|---|
-| Architecture | FFNN, `5 → 10 → 3` | CTRNN, `5 → 6 recurrent → 3` |
-| Persistent controller state | None | Six recurrent states |
-| Evolved parameters | 93 | 93 |
-| Output decision | Raw-score `argmax` | Raw-score `argmax` |
-
-Both controllers receive the same normalized five-vector:
-
-1. horizontal gap to the nearest obstacle;
-2. obstacle top relative to the Dino top;
-3. obstacle bounding-box width;
-4. obstacle bounding-box height;
-5. Dino bounding-box top coordinate.
-
-The policy receives these measurements from the rendered pixels rather than
-game-engine state. Its action space is `0` no key, `1` jump held, and `2`
-duck/fast-drop held. Rendering, perception, controller evaluation, action
-application, and physics use one logical 60 Hz control step. Wall-clock
-acceleration changes pacing, not the simulated time step.
-
-### Evolution and evidence separation
-
-| Stage | Design | Purpose |
-|---|---|---|
-| RQ1 | `(20 + 80)` elitist ES, 25 generations, adaptive scale, optimizer seeds 7/17/27 | Primary learning comparison |
-| RQ2 | Five fixed-scale / parent–offspring cells, both architectures, seeds 7/17/27 | Sensitivity analysis |
-| Selection | Median validation-performing RQ1 archive within each architecture | Freeze one representative per architecture |
-| RQ3 | Paired normal, visual-input, sensor-zero, and CTRNN-state-reset replays | Strategy and causal interventions |
-| Final test | 20 untouched world seeds after selection is frozen | Locked representative comparison |
-
-Each candidate is evaluated on the same ten training worlds within a run, and
-fitness is arithmetic mean survival with a 3,600-step ceiling. Validation uses
-five disjoint worlds; the final test uses another 20 disjoint worlds. The exact
-seed lists and experiment matrix are versioned in
-[`configs/experiment-plan.json`](configs/experiment-plan.json).
-
-## Repository structure
-
-```text
-Project-Code/
-├── configs/                       pre-declared experiment plan and seed partitions
-├── game/                          Chromium-derived TypeScript/Canvas environment
-│   ├── src/                       engine, renderer, input, and batch bridge
-│   └── tests/                     engine and visual-regression tests
-├── media/                         curated image used by this README
-├── paper/                         complete scientific report in PDF format
-├── scripts/                       experiment, replay, system-check, and viewer CLIs
-├── src/dino_er/                   Python research implementation
-│   ├── controllers.py             FFNN and CTRNN definitions
-│   ├── perception.py              rendered-frame measurement pipeline
-│   ├── environment.py             environment and controller execution
-│   ├── evaluation.py              seeded evaluation and interventions
-│   ├── evolution.py               evolution strategy and checkpoints
-│   └── scientific.py              statistics, figures, and exports
-├── tests/                         Python unit and integration tests
-└── third_party/                   pinned Chromium reference source and licences
-```
+Optional CUDA controller inference can be installed with
+`uv sync --extra dev --extra cuda`. Browser simulation and pixel perception
+remain unchanged, and CPU is the portable default.
 
 ## Reproducing the study
 
-First inspect the persisted state and execution plan without launching workers:
+Inspect all planned runs without launching browser workers:
 
 ```console
 uv run --no-sync python scripts/run_experiments.py --dry-run
 ```
 
-Launch the complete dependency-ordered pipeline:
+Run the dependency-ordered RQ1, RQ2, model-selection, RQ3 and locked-test
+pipeline:
+
+<!-- markdownlint-disable MD013 -->
 
 ```console
 uv run --no-sync python scripts/run_experiments.py --accelerator auto --workers auto
 ```
 
-The runner executes independent optimization runs, freezes validation-based
-representatives, and only then performs RQ3 interventions and the locked final
-test. Completed runs are skipped; compatible partial runs can resume from their
-last complete checkpoint. Each worker owns its browser, RNG, checkpoint, and
-result path.
+<!-- markdownlint-enable MD013 -->
 
-To resume only missing RQ3 evidence for the existing model-v2 campaign:
+The full campaign consists of six RQ1 and 30 RQ2 optimisation runs. Each
+standard run evaluates 2,500 candidates over ten training worlds, so this is a
+substantial computation. Completed runs are skipped and compatible partial
+runs resume from their checkpoints.
 
-```console
-uv run --no-sync python scripts/run_experiments.py --rq3-only --model-hash 46ccc63ff585 --accelerator auto --workers 2
-```
+The report's saved model-v2 evidence is stored under
+`results/model_v002_46ccc63ff585/`. To rebuild the self-contained results page
+from those Parquet files:
 
-The full campaign comprises six RQ1 optimization runs and 30 RQ2 runs. At 2,500
-candidate evaluations and ten training episodes per run, it is computationally
-expensive; use the dry run and small visible run before starting it.
-
-### Inspecting and replaying results
-
-Generate the self-contained scientific results viewer:
-
-```console
-uv run --no-sync python scripts/view_results.py
-```
-
-This reads the saved Parquet evidence, writes `scientific-results.html`, embeds
-figures and CSV exports, and opens the file in the default browser. Add
-`--no-open` for non-interactive generation or select the campaign explicitly:
+<!-- markdownlint-disable MD013 -->
 
 ```console
 uv run --no-sync python scripts/view_results.py --model-version 2 --model-hash 46ccc63ff585 --no-open
 ```
 
-Replay an archived policy:
+<!-- markdownlint-enable MD013 -->
 
-```console
-uv run --no-sync python scripts/replay.py --latest proactive
-```
+This writes `scientific-results.html` in the repository root. The HTML contains
+the figures and CSV exports and does not require a local server. New campaigns
+receive their own model and experiment hashes and must not be pooled with the
+reported campaign.
 
-Use `scripts/replay.py --help` for explicit models, world seeds, visual or
-recurrent-state interventions, and Parquet trace export. A replay is a diagnostic
-inspection tool and is not independent statistical evidence.
+`scripts/replay.py` can replay a local checkpoint or model and apply the RQ3
+interventions. Run `uv run --no-sync python scripts/replay.py --help` for the
+required archive paths and options. Replay is diagnostic and is not an
+independent statistical replicate.
 
 ## Verification
 
-Run the Python quality and regression suite:
+Run the Python checks with:
 
 ```console
 uv run --no-sync python -m pytest -q
@@ -285,63 +193,63 @@ uv run --no-sync python -m ruff check .
 uv run --no-sync python -m mypy src scripts tests
 ```
 
-Run the TypeScript and visual-regression suites:
+On Windows, run the TypeScript and visual-regression tests with:
 
-```powershell
-# Windows PowerShell
+```console
 npm.cmd --prefix game run test:ts
 npm.cmd --prefix game run test:visual
 ```
 
-```console
-# macOS or Linux
-npm --prefix game run test:ts
-npm --prefix game run test:visual
-```
+Use `npm` instead of `npm.cmd` on macOS or Linux.
 
-The tests cover controller dimensions and parameter use, perception,
-determinism, seeded environments, evolution behavior, checkpointing,
-interventions, Chromium-reference fidelity, and results generation.
+## Repository layout
 
-## Interpretation and scope
+- `game/` contains the Chromium-derived TypeScript game, renderer and browser
+  bridge.
+- `src/dino_er/` contains perception, controllers, evaluation, evolution and
+  scientific analysis.
+- `scripts/` contains the experiment, replay, system-check and results-viewer
+  command-line interfaces.
+- `configs/experiment-plan.json` fixes the study conditions and seed
+  partitions.
+- `results/` contains the immutable Parquet evidence and generated scientific
+  summaries for the reported campaign.
+- `paper/` contains the submitted report; `media/` contains its selected README
+  figure.
+- `tests/` and `game/tests/` cover the Python and TypeScript implementations.
+- `third_party/` records the pinned Chromium sources and licence information.
 
-- The task establishes partial observability because the five visual measurements
-  omit dynamic state such as vertical velocity and game speed; it does not prove
-  that every observation is perceptually aliased.
-- A state-reset performance loss demonstrates functional state use by the selected
-  CTRNN. It does not show that recurrent state is always beneficial or necessary.
-- Sensor-zero interventions are strong counterfactual perturbations and may move
-  observations outside the policy's training distribution.
-- The locked final-test confidence intervals describe variation across worlds for
-  two fixed representatives, not uncertainty across independently evolved models.
-- Survival is right-censored at 3,600 steps, so ceiling-heavy results contain less
-  information about performance beyond the evaluation horizon.
+Checkpoints and saved controller archives under `artifacts/`, together with the
+generated `scientific-results.html`, remain local runtime outputs.
 
-## Provenance and licences
+## Scope and provenance
 
-The game adaptation is derived from Chromium's
+The result applies to the pinned Chromium-derived normal-mode task, the chosen
+five-feature visual abstraction, the two 93-parameter architectures and the
+tested evolutionary settings. The 3,600-step horizon right-censors strong
+episodes; RQ2 does not estimate interactions; and a zeroed sensor is a strong
+counterfactual rather than an independent feature-importance estimate. See the
+paper for the full validity discussion.
+
+The game is derived from Chromium's
 `components/neterror/resources/dino_game` at revision
-`1ccb91e11f09fbbdec4f8f754d0e2f7d28246660`. Source attribution, local
-modifications, sprite provenance, and the Chromium BSD-style licence are recorded
-in [`THIRD_PARTY_NOTICES.txt`](THIRD_PARTY_NOTICES.txt) and
-[`third_party/`](third_party/).
+`1ccb91e11f09fbbdec4f8f754d0e2f7d28246660`. Attribution, source hashes,
+local adaptations and the Chromium licence are recorded in
+[THIRD_PARTY_NOTICES.txt](THIRD_PARTY_NOTICES.txt) and
+[third_party/](third_party/).
 
 Original project code is released under the [MIT License](LICENSE).
 
 ## Citation
 
-If you use this software or experimental design, cite the
-[accompanying report](paper/JH_de_Vries_AE4350_report.pdf) and the repository
-version used for the analysis. Until an archival DOI is available,
-the following software citation can be used:
-
 ```bibtex
-@software{de_vries_dino_er_2026,
-  author  = {de Vries, J. H.},
-  title   = {Evolved Visual Control for Chromium Dino},
-  year    = {2026},
-  version = {0.3.0},
-  note    = {AE4350 Bio-inspired Intelligence and Learning for Aerospace Applications,
-             Delft University of Technology}
+@misc{de_vries_internal_state_2026,
+  author = {de Vries, Jop},
+  title  = {Internal State in Evolved Visual Control: Reactive and Proactive
+            Controllers for Chromium Dino},
+  year   = {2026},
+  note   = {AE4350 Bio-inspired Intelligence and Learning for Aerospace
+            Applications, Delft University of Technology},
+  url    = {https://github.com/Jopdevries/dino-er}
 }
 ```
