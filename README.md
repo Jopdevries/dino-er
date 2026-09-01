@@ -2,10 +2,11 @@
 
 This repository accompanies the AE4350 report *Internal state in evolved visual
 control: Reactive and proactive controllers for Chromium Dino*. The study
-compares a reactive feed-forward neural network (FFNN) with a continuous-time
-recurrent neural network (CTRNN). Both controllers have 93 evolved parameters,
-receive the same five measurements extracted from the current rendered frame,
-and are evaluated on the same seeded worlds and candidate budget.
+compares a reactive feed-forward neural network (FFNN) with a proactive
+continuous-time recurrent neural network (CTRNN). Both controllers have 93
+evolved parameters, receive the same five measurements extracted from the
+current rendered frame, and are evaluated on the same seeded worlds and
+candidate budget.
 
 The main result is deliberately narrower than "recurrence is better". The
 reactive controller learned faster within the fixed budget. The selected CTRNN
